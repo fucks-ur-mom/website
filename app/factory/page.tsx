@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
 
 type DnsRecordForm = {
+  subdomain: string; // Add this property
   owner: {
     username: string;
     email: string;
@@ -24,6 +25,21 @@ type DnsRecordForm = {
   };
   proxied: boolean;
 };
+
+// In your form component, add a subdomain input field:
+<FormField
+  name="subdomain"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Subdomain</FormLabel>
+      <Input 
+        {...field}
+        placeholder="your-desired-subdomain"
+        required
+      />
+    </FormItem>
+  )}
+/>
 
 export default function FactoryPage() {
   const form = useForm<DnsRecordForm>();
