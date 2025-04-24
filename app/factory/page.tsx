@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Form, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 
 type DnsRecordForm = {
   subdomain: string; // Add this property
@@ -197,7 +198,7 @@ export default function FactoryPage() {
                     />
                   </div>
 
-                  {/* Proxied Setting */}
+                  {/* Proxied Setting - keep existing code but ensure Switch is imported */}
                   <FormField
                     name="proxied"
                     render={({ field }) => (
