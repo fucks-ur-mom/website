@@ -10,6 +10,12 @@ import { useToast } from '@/components/ui/use-toast';
 import { Command, CommandInput, CommandList } from '@/components/ui/command';
 import { useRouter } from 'next/navigation';
 
+// Add missing imports at the top
+import React from 'react';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+
+// Ensure all state and hooks are INSIDE the component function
 export default function Home() {
   const router = useRouter();
   const { toast } = useToast();

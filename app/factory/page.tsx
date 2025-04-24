@@ -44,7 +44,11 @@ type DnsRecordForm = {
 
 // Add these imports at the top
 import { useEffect, useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+// Change this import
+import { useToast } from '@/hooks/use-toast'; // Correct path
+
+// Instead of:
+// import { useToast } from '@/components/ui/use-toast';
 
 // Add this inside your component
 export default function FactoryPage() {
