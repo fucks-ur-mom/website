@@ -6,7 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'loves-ur.mom - Domain Registration Service',
+  title: 'fucks-ur.mom - Domain Registration Service',
   description: 'Professional subdomain registration service',
 };
 

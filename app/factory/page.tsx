@@ -42,10 +42,81 @@ type DnsRecordForm = {
   )}
 />
 
-export default function FactoryPage() {
-  const form = useForm<DnsRecordForm>();
+// Add these imports at the top
+import { useEffect, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
+// Add this inside your component
+export default function FactoryPage() {
+  const { toast } = useToast();
+  const [checkingDomain, setCheckingDomain] = useState(false);
+  const [domainAvailable, setDomainAvailable] = useState<boolean | null>(null);
+
+  // Add domain check handler
+  const checkDomain = async (subdomain: string) => {
+    try {
+      setCheckingDomain(true);
+      const response = await fetch('/api/check-domain', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ subdomain }),
+      });
+      
+      const data = await response.json();
+      if (data.available) {
+        toast({ title: 'Domain available!', description: `${subdomain}.fucks-ur.mom is available` });
+        setDomainAvailable(true);
+      } else {
+        toast({ title: 'Domain taken', description: `${subdomain}.fucks-ur.mom is unavailable`, variant: 'destructive' });
+        setDomainAvailable(false);
+      }
+    } catch (error) {
+      toast({ title: 'Check failed', description: 'Error checking domain availability', variant: 'destructive' });
+    } finally {
+      setCheckingDomain(false);
+    }
+  };
+
+  // Update your subdomain form field
+  <FormField
+    name="subdomain"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Subdomain</FormLabel>
+        <div className="flex gap-2">
+          <Input
+            {...field}
+            placeholder="your-desired-subdomain"
+            required
+            onChange={(e) => {
+              field.onChange(e);
+              setDomainAvailable(null); // Reset availability on change
+            }}
+          />
+          <Button
+            type="button"
+            onClick={() => checkDomain(field.value)}
+            disabled={checkingDomain || !field.value}
+          >
+            {checkingDomain ? 'Checking...' : 'Check Availability'}
+          </Button>
+        </div>
+      </FormItem>
+    )}
+  />
+
+  // Add validation to generateJson
   const generateJson = (data: DnsRecordForm) => {
+    if (domainAvailable !== true) {
+      toast({
+        title: 'Domain not verified',
+        description: 'Please check domain availability first',
+        variant: 'destructive'
+      });
+      return;
+    }
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

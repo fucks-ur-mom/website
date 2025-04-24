@@ -4,6 +4,80 @@ import { motion } from "framer-motion";
 import { Server, Globe, Database, Github, Twitter, Globe2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+// Add these new imports at the top
+import { useEffect, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
+import { Command, CommandInput, CommandList } from '@/components/ui/command';
+import { useRouter } from 'next/navigation';
+
+export default function Home() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const [subdomain, setSubdomain] = useState('');
+  const [isChecking, setIsChecking] = useState(false);
+
+  // Add domain check handler
+  const checkDomain = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!subdomain) return;
+
+    setIsChecking(true);
+    try {
+      const response = await fetch('/api/check-domain', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ subdomain }),
+      });
+
+      const data = await response.json();
+      if (data.available) {
+        toast({
+          title: 'Domain available! 🎉',
+          description: `${subdomain}.fucks-ur.mom is ready for registration`,
+        });
+      } else {
+        toast({
+          title: 'Domain taken 😞',
+          description: data.error || `${subdomain}.fucks-ur.mom is unavailable`,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      toast({
+        title: 'Check failed',
+        description: 'Error checking domain availability',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  // Update the search section
+  <form onSubmit={checkDomain}>
+    <Command className="rounded-lg border shadow-md mb-8">
+      <CommandInput 
+        placeholder="Search for a subdomain (e.g. 'yourname')"
+        value={subdomain}
+        onValueChange={setSubdomain}
+        disabled={isChecking}
+      />
+      <CommandList>
+        {/* Add search results here if needed */}
+      </CommandList>
+    </Command>
+    <div className="flex justify-center gap-2">
+      <Button 
+        type="submit" 
+        disabled={isChecking || !subdomain}
+        className="h-12 px-8"
+      >
+        {isChecking ? 'Checking...' : 'Check Availability'}
+      </Button>
+    </div>
+  </form>
+  const [searchQuery, setSearchQuery] = React.useState('');
+
 
 export default function Home() {
   const features = [
@@ -53,20 +127,43 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              loves-ur.mom
-            </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Get your own personalized subdomain through our GitHub-based registration system
-            </p>
+            {/* Add Command component for search */}
+            <Command className="rounded-lg border shadow-md mb-8">
+              <CommandInput 
+                placeholder="Search features..."
+                value={searchQuery}
+                onValueChange={setSearchQuery}
+              />
+              <CommandList>
+                {/* Search results would go here */}
+              </CommandList>
+            </Command>
+
+            {/* Update buttons with proper links */}
             <div className="flex justify-center gap-4">
-              <Button size="lg" className="h-12">
+              <Button 
+                size="lg" 
+                className="h-12"
+                onClick={() => window.open('https://github.com/fucks-ur-mom/register', '_blank')}
+              >
                 <Github className="mr-2 h-5 w-5" />
                 View on GitHub
               </Button>
-              <Button size="lg" variant="outline" className="h-12">
+              {/* Update Register Now button */}
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="h-12"
+                onClick={() => {
+                  if (subdomain) {
+                    router.push(`/factory?subdomain=${encodeURIComponent(subdomain)}`);
+                  } else {
+                    router.push('/factory');
+                  }
+                }}
+              >
                 <Globe2 className="mr-2 h-5 w-5" />
-                Register Now
+                {subdomain ? 'Register Now →' : 'Register Now'}
               </Button>
             </div>
           </motion.div>
